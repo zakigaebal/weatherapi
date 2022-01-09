@@ -1,61 +1,49 @@
-const weather = document.querySelector(".js-weather");
-const weatherTitle = weather.querySelector("h2");
+
+const weather =document.querySelector(".js-weather");
+
 
 const API_KEY = "aa6ceff75ee966bc45ddbfba4edf90b1";
-const COORDS = "coords";
 
-
-function getWeather(lat, lng) {
-    fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric`
-        
-    ).then(function(response) {
-        return response.json();
-    }).then(function(json) {
-        const temperature = json.main.temp;
-        const place = json.name;
-        weatherTitle.innerText = `지금 ${place}은 ${temperature}도 입니다.`;
-    });
-    
+function getWeather(lat,lng){
+fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric`).then(function(respone){
+    return respone.json()
+}).then(function(json){
+    const temperature = json.main.temp;
+    const place = json.name;
+    weather.innerText = `${temperature} @ ${place}`;
+})
 }
 
-function saveCoords(coordsObj) {
-    localStorage.setItem(COORDS, JSON.stringify(coordsObj));
+function saveCoords(coordsObj){
+    localStorage.setItem("coords",JSON.stringify(coordsObj));
 }
 
-function handleGeoSucces(position){
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+function handleGeoSuccess(position){
+    const latitude =position.coords.latitude;
+    const longitude =position.coords.longitude;
     const coordsObj = {
-        latitude,longitude
+        //객체에 변수의 이름과 객체의 키가 같으면 그냥ㅇ 이렇게 할 수 있음
+        latitude, longitude
     };
-    saveCoords(coordsObj);
-    getWeather(latitude,longitude);
+saveCoords(coordsObj);
+getWeather(latitude, longitude);
 }
-
-function handleGeoError (){
-    console.log('Cant access geo location')
+function handleGeoError(){
+    console.log("cant access geo location");
 }
-
 function askForCoords(){
-    navigator.geolocation.getCurrentPosition(handleGeoSucces, handleGeoError);
+    navigator.geolocation.getCurrentPosition(handleGeoSuccess,handleGeoError);
 }
-
-function loadCoords() {
-    const loadedCoords = localStorage.getItem(COORDS);
-    if(loadedCoords === null) {
+function loadCoords(){
+    const loadCoords =localStorage.getItem("coords");
+    if(loadCoords === null){
         askForCoords();
-    } else {
-        const parseCoords = JSON.parse(loadedCoords);
+    }else{
+        const parseCoords = JSON.parse(loadCoords);
         getWeather(parseCoords.latitude, parseCoords.longitude);
     }
 }
-
-function init() {
-    loadCoords();
+function init(){
+loadCoords();
 }
-
-init ();
-
-
-
+init();
